@@ -17,7 +17,7 @@ path = r'C:\Users\username\Desktop\PATH\FileName.xlxs'  # Input your workbook's 
 
 xlapp = win32com.client.DispatchEx("Excel.Application") # Start an instance of Excel
 
-wb = xlapp.workbooks.open(path)                         # Open the workbook
+wb = xlapp.workbooks.Open(path)                         # Open the workbook
 
 wb.RefreshAll()                                         # Refresh all data connections in said workbook
 
@@ -27,7 +27,11 @@ xlapp.DisplayAlerts = False                             # Stops the dialog box f
 
 wb.Save()                                               # Saves the file
 
+wb.Close()                                              # Closes the workbook
 xlapp.Quit()                                            # Quits the connection
+
+del wb                                                  # Stops workbook from running in the background
+del xlapp                                               # Ends Excel in the background (Task Manager) 
 
 
 #PART 2: LOAD IN THE FILE AND TRANSFORM DATA
