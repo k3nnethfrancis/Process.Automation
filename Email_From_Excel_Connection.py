@@ -2,7 +2,7 @@
 
 # Import Packages
 
-import win32com.client                                  # For working with excel files and refreshing the connection
+import win32com.client as win32                         # For working with excel files and refreshing the connection
 import pandas as pd                                     # For Data manipulation
 import smtplib                                          # For Sending emails
 from email.mime.text import MIMEText                    # MIME helps us format emails
@@ -15,23 +15,24 @@ from datetime import date                               # For adding todays date
 
 path = r'C:\Users\username\Desktop\PATH\FileName.xlxs'  # Input your workbook's path here
 
-xlapp = win32com.client.DispatchEx("Excel.Application") # Start an instance of Excel
+xl = win32.client.DispatchEx('Excel.Application')       # Start an instance of Excel
 
-wb = xlapp.workbooks.Open(path)                         # Open the workbook
+wb = xl.workbooks.Open(path)                            # Open the workbook
 
 wb.RefreshAll()                                         # Refresh all data connections in said workbook
 
-xlapp.CalculateUntilAsyncQueriesDone()                  # Holds the program until the refresh has completed
+xl.CalculateUntilAsyncQueriesDone()                     # Holds the program until the refresh has completed
 
-xlapp.DisplayAlerts = False                             # Stops the dialog box from popping up
+xl.DisplayAlerts = False                                # Stops the dialog box from popping up
 
 wb.Save()                                               # Saves the file
 
 wb.Close()                                              # Closes the workbook
-xlapp.Quit()                                            # Quits the connection
+xl.Quit()                                               # Quits the connection
 
-del wb                                                  # Stops workbook from running in the background
-del xlapp                                               # Ends Excel in the background (Task Manager) 
+#del wb                                                  # Optional - use these when you are scheduling this program to run
+#del xlapp                                               # They terminate Excel in the background (Task Manager) which ensures a proper refresh
+                                                        
 
 
 #PART 2: LOAD IN THE FILE AND TRANSFORM DATA
