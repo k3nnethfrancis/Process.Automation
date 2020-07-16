@@ -3,20 +3,25 @@
 # You can execute this code before using the workbook in your script to refresh it and get the latest data
 # I call it the poor mans API
 
-import win32com.client                                  # The library we will use to refresh our workbook
+import win32com.client as win32                         # The library we will use to refresh our workbook
 
-xlapp = win32com.client.DispatchEx("Excel.Application") # Starts an instance of Excel
+xl = win32.client.DispatchEx('Excel.Application')       # Starts an instance of Excel
 
-path = r'C:\Users\username\Desktop\PATH\FileName.xlsx   # Update this with your workbooks file path
+path = r'C:\Users\username\Desktop\PATH\FileName.xlsx'  # Update this with your workbooks file path
 
-wb = xlapp.workbooks.open(path)                         # Opens the workbook
+wb = xl.workbooks.Open(path)                            # Opens the workbook
 
 wb.RefreshAll()                                         # Refreshes the data connection
 
-xlapp.CalculateUntilAsyncQueriesDone()                  # Holds the program and wait until the refresh has completed before continuing
+xl.CalculateUntilAsyncQueriesDone()                     # Holds the program and wait until the refresh has completed before continuing
 
-xlapp.DisplayAlerts = False                             # Stops the dialog box from popping up (without this you will be prompted to save the file when running this code)
+xl.DisplayAlerts = False                                # Stops the dialog box from popping up
 
-wb.Save()                                               # Saves the file (also why we don't need to save the file when the dialoge box pops up)
+wb.Save()                                               # Saves the file
 
-xlapp.Quit()                                            # Quits the connection
+wb.Close()                                              # Closes the workbook
+
+xl.Quit()                                               # Quits the connection
+# del wb                                                # Excel sometimes stays running in the background
+# del xl                                                # Deleting these variables seems to solve that problem
+                                                        # You will want to uncomment these 2 lines if you are scheduling this program to run on a cadence
