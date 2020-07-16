@@ -24,4 +24,4 @@ wb.Close()                                              # Closes the workbook
 xl.Quit()                                               # Quits the connection
 # del wb                                                # Excel sometimes stays running in the background
 # del xl                                                # Deleting these variables seems to solve that problem
-                                                        # You will want to uncomment these 2 lines if you are scheduling this program to run on a cadence
+                                                        # You will want to uncomment these 2 lines if you are scheduling this program to run
