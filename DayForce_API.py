@@ -16,7 +16,7 @@ url = r"https://usr58-services.dayforcehcm.com/Api/companyname/V1/Reports/" + re
 # Create a response object that contains our report data
 r = requests.get(url , auth=(USER, PASS)) 
 
-# Decond json from response object
+# Decode json from response object
 r_json = r.json()
 
 # Parse json into a data frame
