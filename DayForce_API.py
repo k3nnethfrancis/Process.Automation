@@ -1,31 +1,41 @@
-# Importing Librarys
+def DF_api(report_name):
+    '''
+    Takes a report integration name report_name, sends a get request, parses json, and returns a dataframe.
+        Parameters:
+                report_name: report integration name 
+        Returns:
+            dataframe of said report.
+        Notes:
+            Dayforce report must be a V2 report.
+            Row Limit: 5000
+    '''
 
-import requests
-import pandas as pd
-import json
-import os
+    # import necessary modules
+    import requests
+    import pandas as pd
+    import json
+    import os
 
-# Get credentials from environment variabels
-USER = os.environ['DF_USER']
-PASS = os.environ['DF_PASS']
+    # get credentials from environment variables
+    USER = os.environ['DF_USER']
+    PASS = os.environ['DF_PASS']
 
-# Select report and concatenate to url string
-report = "API_TEST"
-url = r"https://usr58-services.dayforcehcm.com/Api/companyname/V1/Reports/" + report
+    report = report_name
 
-# Create a response object that contains our report data
-r = requests.get(url , auth=(USER, PASS)) 
+    url = r"https://usr58-services.dayforcehcm.com/Api/Motivate/V1/Reports/" + report
 
-# Decode json from response object
-r_json = r.json()
+    # perform get request to obtain json data
 
-# Parse json into a data frame
-# for r_json['Data']['Rows'] we are selecting the dict Rows within the outer dict 'Data'
-df = pd.DataFrame.from_dict(r_json['Data']['Rows'])
+    r = requests.get(url , auth=(USER, PASS))
 
-# Print the DataFrame to confirm
-print(df)
+    # convert json to a datafram
+
+    r_json = r.json()
+    df = pd.DataFrame.from_dict(r_json['Data']['Rows'])
+    return df
+
+my_report = DF_api("report_integration_name")
 
 # Optional: Write the DataFrame to a .csv file
-#df.to_csv(r"C:\Users\PATH...\Desktop\FileName.csv", index=False)
+#my_report.to_csv(r"C:\Users\PATH...\Desktop\FileName.csv", index=False)
        
