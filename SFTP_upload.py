@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import pysftp
 
-## UPLOAD A FILE TO AN SFTP
+# UPLOAD A FILE TO AN SFTP
 
 def sftp_upload(remote_path, remote_file_name, local_path, local_file_name):
     '''
