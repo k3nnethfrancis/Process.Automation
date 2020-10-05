@@ -7,18 +7,31 @@
 # And load it back to the (S)FTP
 # The LMS will pick up the file daily from there
 
-# DOWNLOAD DATA FROM FILEZILLA SERVER AND LOAD IT TO A DATAFRAME
+# Import modules
+import sys
+import os
+import pysftp
+import pandas as pd
 
-def fzilla_download(path_name, file_name, local_path, local_file_name):
-    #import modules
-    import pysftp
-    import sys
-    import pandas as pd
-    import os
+# DEFINING FUNCTIONS
+# DOWNLOAD DATA FROM SFTP SERVER AND LOAD IT TO A DATAFRAME
 
+def sftp_download(path_name, file_name, local_path, local_file_name):
+    '''
+    Takes path and file names as arguements, connects to sftp, downloads a file, and writes it to a dataframe
+        Parameters:
+                path_name: path in SFTP server where file is located
+                file_name: file name in SFTP server
+                local_path: path where the file will be downloaded
+                local_file_name: what the file will be named when downloaded
+        Returns:
+            dataframe of file
+        Notes:
+            Must be an csv file.
+    '''
     # Define Credential Variables
-    HOST = ''
-    USER = ''
+    HOST = 'ftp.hostname.com'
+    USER = 'user'
     PASS = os.environ['SFTP_PASS']
     
     # Define File Location (from user input)
@@ -27,9 +40,9 @@ def fzilla_download(path_name, file_name, local_path, local_file_name):
 
     # Establish Connection
     cnopts = pysftp.CnOpts()
-    cnopts.hostkeys = cnopts.hostkeys.load('SFTP_Host_keysTEST.txt') # This should be the path of the text file that contains your host keys
-                                                                     # If you don't have them, replace it with cnopts.hostkeys = None
-    srv = pysftp.Connection(HOST, USER, password=PASS, cnopts=cnopts)
+    cnopts.hostkeys = cnopts.hostkeys.load(r'C:\Users\...\SFTP_Host_keys.txt')  # This should be the path of the .txt file that contains your host keys
+                                                                                # If you don't have them, replace it with cnopts.hostkeys = None
+    srv = pysftp.Connection(HOST, USER, password=PASS, cnopts=cnopts) 
 
     # Define Local Path (for download destination)
     LFN = local_file_name
@@ -47,18 +60,22 @@ def fzilla_download(path_name, file_name, local_path, local_file_name):
     
     return df
 
-# UPLOAD FILE TO SFTP
+# UPLOAD A FILE TO AN SFTP
 
-def fzilla_upload(remote_path, remote_file_name, local_path, local_file_name):
-    #import modules
-    import pysftp
-    import sys
-    import pandas as pd
-    import os
-
+def sftp_upload(remote_path, remote_file_name, local_path, local_file_name):
+    '''
+    Takes path and file names as arguements, connects to sftp, and uploads a file
+        Parameters:
+                remote_path: path in SFTP server where file will be uploaded
+                remote_file_name: name for file to be uploaded to SFTP server
+                local_path: path where the file to be uploaded is located
+                local_file_name: name of the file being uploaded
+        Returns:
+                None
+    '''
     # Define Credential Variables
-    HOST = ''
-    USER = ''
+    HOST = 'ftp.hostname.com'
+    USER = 'user'
     PASS = os.environ['SFTP_PASS']
     
     # Define File Location (from user input)
@@ -83,7 +100,6 @@ def fzilla_upload(remote_path, remote_file_name, local_path, local_file_name):
 
     return
 
-
 # DEFINE PATH VARIABLES
 
 DLremote_path= ''                 # Path name from (S)FTP where you are downloading the file from
@@ -95,12 +111,9 @@ local_file_name= ''               # Local file name
 
 # DOWNLOAD THE FILE AND LOAD IT OT A DATAFRAME
 
-export_df = fzilla_download(DLremote_path, DLremote_file_name, local_path, local_file_name)
+export_df = sftp_download(DLremote_path, DLremote_file_name, local_path, local_file_name)
 
 # TRANSFORM THE DATAFRAME
-
-#Import modules
-import pandas as pd
 
 #Initialize the import DataFrame
 import_df = pd.DataFrame(columns=['Login', 'Firstname', 'Lastname', 'Email', 'Password', 'User-type',
@@ -158,23 +171,36 @@ LMS_df['custom_field: System'] = LMS_df['custom_field: System'].replace(['Loc4']
 LMS_df['custom_field: System'] = LMS_df['custom_field: System'].replace(['Loc5'],'System5')
 
 #Transform Manager Email
-#This looks at an employees manager id, checks for where it is in the employee ID column
-#And then populates the email of that manager in the manager email column based off the index
-MgrIndex = []                                                                             # initialize an empty list
-for i in LMS_df['custom_field: Manager Employee Number'].to_list():                       # iterate through maanger number as a list
-    if i in LMS_df['custom_field: Employee Number'].to_list():                            # check if mgr num exists in the list of employee nums
-        MgrIndex.append(LMS_df[LMS_df['custom_field: Employee Number']==i].index.values)  # return the index of the manager num in employee nums
-                                                                                          # and append to the list MgrIndex                                                                                        
-                                                                                          
-MgrEmail = []                                                                             # initialize an empty list
-for i in MgrIndex:                                                                        # iterate through the MgrIndex list
-    MgrEmail.append(list(LMS_df['Email'][i]))                                             # append the email at the index in MgrIndex
-LMS_df['custom_field: Manager E-mail'] = pd.DataFrame(MgrEmail)                           # input MgrEmail list into Manager Email Column
-                                                                                          # note that here MgrEmail must be converted to a DF
+IDdf = LMS_df[['custom_field: Employee Number', 'Email']]                               # create a new df of IDs and emails only
+IDdf = IDdf.rename(columns={'custom_field: Employee Number': 'MgrNumber',               # rename columns for join
+                                        'Email': 'custom_field: Manager E-mail'})
+
+mdf = LMS_df[['custom_field: Manager Employee Number']].drop_duplicates()               # create a new df of manager IDs and drop duplicates
+mdf = mdf.rename(columns={'custom_field: Manager Employee Number': 'MgrNumber'})        # rename columns for join
+
+inner_join_df= pd.merge(mdf, IDdf, on=['MgrNumber'], how='inner')                       # join emails to manager IDs to get manager emails
+inner_join_df.drop_duplicates()                                                         
+
+LMS_df1 = LMS_df.rename(columns={'custom_field: Manager Employee Number': 'MgrNumber'}) # create a new df from the original df and match column names for join
+LMS_df1 = LMS_df1.drop(columns='custom_field: Manager E-mail')                          # drop the manager email column (will be replaced when joined)
+
+LMS_df = pd.merge(LMS_df1, inner_join_df, how='inner')
+
+LMS_df = LMS_df.rename(columns={'MgrNumber':'custom_field: Manager Employee Number'})   # rename new columns to meet requirements
+
+neworder = ['Login', 'Firstname', 'Lastname', 'Email', 'Password', 'User-type',
+       'Bio', 'Active', 'Deactivation-date', 'Exclude-from-emails',
+       'custom_field: Common Name', 'custom_field: Employee Number',
+       'custom_field: Job Level', 'custom_field: Department',
+       'custom_field: System', 'custom_field: Manager Name',
+       'custom_field: Manager Employee Number', 'custom_field: Manager E-mail',
+       'custom_field: Pay Type', 'custom_field: State']
+
+LMS_df=LMS_df.reindex(columns=neworder)                                                 # reorder columns to meet requirements
 
 #WRITE THE TRANSFORMED DATAFRAME TO A NEW FILE
 path = local_path + local_file_name
 LMS_df.to_excel(path, index=False)
 
 # RE-UPLOAD THE FILE TO SFTP
-fzilla_upload(ULremote_path, ULremote_file_name, local_path, local_file_name)
+sftp_upload(ULremote_path, ULremote_file_name, local_path, local_file_name)
