@@ -1,3 +1,11 @@
+#!python3 
+
+# import modules
+import os
+import json
+import requests
+import pandas as pd
+
 def DF_api(report_name):
     '''
     Takes a report integration name report_name, sends a get request, parses json, and returns a dataframe.
@@ -9,13 +17,6 @@ def DF_api(report_name):
             Dayforce report must be a V2 report.
             Row Limit: 5000
     '''
-
-    # import necessary modules
-    import requests
-    import pandas as pd
-    import json
-    import os
-
     # get credentials from environment variables
     USER = os.environ['DF_USER']
     PASS = os.environ['DF_PASS']
