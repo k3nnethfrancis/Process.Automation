@@ -6,16 +6,16 @@ import os
 import pysftp
 import pandas as pd
 
-# DOWNLOAD DATA FROM FILEZILLA SERVER AND LOAD IT TO A DATAFRAME
+# DOWNLOAD DATA FROM SFTP SERVER AND LOAD IT TO A DATAFRAME
 
-def fzilla_download(path_name, file_name, local_path, local_file_name):
+def sftp_download(path_name, file_name, local_path, local_file_name):
     '''
-    Takes path and file names as arguements, connects to filezilla, downloads a file, and writes it to a dataframe
+    Takes path and file names as arguements, connects to sftp, downloads a file, and writes it to a dataframe
         Parameters:
                 path_name: path in SFTP server where file is located
                 file_name: file name in SFTP server
                 local_path: path where the file will be downloaded
-                local_file_name: what file will be named when downloaded
+                local_file_name: what the file will be named when downloaded
         Returns:
             dataframe of file
         Notes:
@@ -57,4 +57,4 @@ file_name= r'/file_name_on_server.csv'
 local_path= r"C:\Users\....\path"
 local_file_name= r"\file_name.csv"
 
-df = fzilla_download(path_name, file_name, local_path, local_file_name)
+df = sftp_download(path_name, file_name, local_path, local_file_name)
