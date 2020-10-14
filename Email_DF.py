@@ -10,7 +10,7 @@ from email.mime.multipart import MIMEMultipart
 
 # Email a dataframe function
 
-def email_table(data, host='', email='', pw='', recipients=[], subject='', From=''):
+def email_df(data, host='', email='', pw='', recipients=[], subject='', From=''):
     '''
     Takes a dataframe and emails it to recipients.
         Parameters:
