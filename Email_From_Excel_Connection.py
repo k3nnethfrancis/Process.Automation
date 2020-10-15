@@ -1,3 +1,5 @@
+#! python
+
 # Refresh the data connection, Load the file, manipulate the dataframe, send an email with the info
 
 # Import Packages
