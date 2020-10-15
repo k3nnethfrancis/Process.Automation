@@ -1,4 +1,4 @@
-#!python
+#! python
 
 # Email a dataframe in table format
 
