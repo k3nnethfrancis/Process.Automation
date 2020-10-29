@@ -20,7 +20,7 @@ def email_df(data, host='', email='', pw='', recipients=[], subject='', From='')
                 pw: password for your email address (passing env variables is recommended)
                 recipients: list of emails to send to (must be str)
                 subject: what you want the subject line to be
-                From: who the email is coming from (typically same as host)
+                From: who the email is coming from (typically same as email)
         Returns:
             None.
         Notes:
