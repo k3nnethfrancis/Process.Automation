@@ -12,7 +12,7 @@ pw = '********'                 # replace this with your password
 con.login(email, pw)            # logins you into your account
 
 to = 'email@domain.com'                                       # this is the email you are sending from. It will likely be the same as the email variable above
-subject = 'Subject: Hello\n\n'                                # this is the subject line and it must start with 'Subject: '
+subject = 'Subject: Your_Subject\n\n'                                # this is the subject line and it must start with 'Subject: '
 body = 'Hello,\n\nThis is an email from Python.\n\n-Ken'      # this is your message body
 
 con.sendmail(email, to, subject+body)   # sends your email
