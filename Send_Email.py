@@ -1,20 +1,35 @@
-import smtplib                  # the library we use to connect to an email server
+#!python
 
-host = 'smtp.gmail.com'         # smtp connection domain. In this case we are using gmail.
+# Import packages
+import smtplib
 
-con = smtplib.SMTP(host, 587)   # this is the connection variable, 587 is the port number
-con.ehlo()                      # start the connection
-con.starttls()                  # starts encryption
+# Email a dataframe function
 
-email = 'email@domain.com'      # replace this with your login email for your credentials
-pw = '********'                 # replace this with your password
+def send_email(subject='', body='', host='', email='', pw='', recipients=[]):
+    '''
+    Takes some test (body) and emails it to recipients.
+        Parameters:
+                subject: what you want the subject line to be
+                body: what you want to say
+                host: should be 'smtp.yourdomain.com'
+                email: your email address
+                pw: password for your email address (passing env variables is recommended)
+                recipients: list of emails to send to (must be strings within a list)
+        Returns:
+            None.
+        Notes:
+        body should be formatted using \\n for new lines. 
+        E.g., Hello,\\n\\nThis is an email from Python.\\n\\n-Ken
+    '''
+    emaillist = [elem.strip().split(',') for elem in recipients]  # Parses recipients list
+    
+    subject = 'Subject: '+subject+'\n\n'                            
+    body = 'Hello,\n\n'+body
 
-con.login(email, pw)            # logins you into your account
-
-to = 'email@domain.com'                                       # this is the email you are sending from. It will likely be the same as the email variable above
-subject = 'Subject: Your_Subject\n\n'                                # this is the subject line and it must start with 'Subject: '
-body = 'Hello,\n\nThis is an email from Python.\n\n-Ken'      # this is your message body
-
-con.sendmail(email, to, subject+body)   # sends your email
-
-con.quit()                              # ends the connection
+    con = smtplib.SMTP(host, 587)                                 # Connection variable
+    con.ehlo()                                                    # Starts the connection
+    con.starttls()                                                # Starts the encryption
+    con.login(email, pw)                                          # Logs you in
+    con.sendmail(email, emaillist, subject+body)                  # Sends your email
+    con.quit()
+    return
